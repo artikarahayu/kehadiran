@@ -21,7 +21,7 @@ class AbsensiApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFFAFAFA), //warna latar belakang
         useMaterial3: true, //menggunakan material 3
       ),
-      home: const AbsensiScreen(), //menampilkan halaman utama AbsensiScreen
+      home: AbsensiScreen(), //menampilkan halaman utama AbsensiScreen
     );
   }
 }
