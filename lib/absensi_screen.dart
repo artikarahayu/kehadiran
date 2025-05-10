@@ -20,10 +20,16 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   // fungsi saat klik tombol
   void _konfirmasi() {
     if (selectedNama != null && selectedIsi != null) {
+      final DateTime waktuAbsen = DateTime.now(); //mengambil waktu saat ini
       Navigator.push(
         // pindah ke halaman sukses
         context,
-        MaterialPageRoute(builder: (context) => const SuksesScreen()),
+        MaterialPageRoute(
+          builder:
+              (context) => const SuksesScreen(
+                waktu: waktuAbsen, //waktu absen yang diambil
+              ),
+        ),
       );
     }
   }
