@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'sukses_screen.dart'; // menambahkan import halaman sukses
 
 class AbsensiScreen extends StatefulWidget {
   const AbsensiScreen({super.key});
@@ -26,7 +27,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         context,
         MaterialPageRoute(
           builder:
-              (context) => const SuksesScreen(
+              (context) => SuksesScreen(
                 waktu: waktuAbsen, //waktu absen yang diambil
               ),
         ),
