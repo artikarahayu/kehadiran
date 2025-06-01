@@ -9,18 +9,18 @@ class AbsensiScreen extends StatefulWidget {
 }
 
 class _AbsensiScreenState extends State<AbsensiScreen> {
-  final List<String> namaList = [
-    'Artika Rahayu',
-    'Arwidya Diestyana',
-  ]; // opsi nama
   final List<String> isiList = ['Hadir', 'Tidak Hadir']; // opsi kehadiran
+  final TextEditingController _namaController =
+      TextEditingController(); // controller untuk input nama
 
-  String? selectedNama; // nama yang dipilih
   String? selectedIsi; // isi kehadiran yang dipilih
 
   // fungsi saat klik tombol
   void _konfirmasi() {
-    if (selectedNama != null && selectedIsi != null) {
+    final String nama =
+        _namaController.text.trim(); // ambil dan bersihkan input nama
+
+    if (nama.isNotEmpty && selectedIsi != null) {
       final DateTime waktuAbsen = DateTime.now(); //mengambil waktu saat ini
       Navigator.push(
         // pindah ke halaman sukses
@@ -28,11 +28,22 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         MaterialPageRoute(
           builder:
               (context) => SuksesScreen(
-                waktu: waktuAbsen, //waktu absen yang diambil
+                waktu: waktuAbsen, // waktu absen yang diambil
               ),
         ),
       );
+    } else {
+      // tampilkan snackbar jika belum lengkap
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Silakan isi nama dan pilih kehadiran')),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    _namaController.dispose(); // bersihkan controller saat widget dihancurkan
+    super.dispose();
   }
 
   @override
@@ -65,26 +76,14 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
               ),
               const SizedBox(height: 40),
 
-              DropdownButtonFormField<String>(
-                value: selectedNama, // nilai awal dropdown
-                items:
-                    namaList
-                        .map(
-                          (nama) =>
-                              DropdownMenuItem(value: nama, child: Text(nama)),
-                        )
-                        .toList(),
+              TextField(
+                controller: _namaController,
                 decoration: const InputDecoration(
                   labelText: 'Nama Kehadiran', // label input
                   border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    selectedNama = value; // simpan pilihan
-                  });
-                },
               ),
               const SizedBox(height: 20),
 
