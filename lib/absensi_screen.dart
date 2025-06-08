@@ -1,5 +1,8 @@
+// absensi_screen.dart
 import 'package:flutter/material.dart';
-import 'sukses_screen.dart'; // menambahkan import halaman sukses
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'sukses_screen.dart';
+import 'list_absensi_screen.dart';
 
 class AbsensiScreen extends StatefulWidget {
   const AbsensiScreen({super.key});
@@ -9,31 +12,35 @@ class AbsensiScreen extends StatefulWidget {
 }
 
 class _AbsensiScreenState extends State<AbsensiScreen> {
-  final List<String> isiList = ['Hadir', 'Tidak Hadir']; // opsi kehadiran
-  final TextEditingController _namaController =
-      TextEditingController(); // controller untuk input nama
+  final List<String> isiList = ['Hadir', 'Tidak Hadir'];
+  final TextEditingController _namaController = TextEditingController();
+  String? selectedIsi;
 
-  String? selectedIsi; // isi kehadiran yang dipilih
-
-  // fungsi saat klik tombol
-  void _konfirmasi() {
-    final String nama =
-        _namaController.text.trim(); // ambil dan bersihkan input nama
+  Future<void> _konfirmasi() async {
+    final String nama = _namaController.text.trim();
 
     if (nama.isNotEmpty && selectedIsi != null) {
-      final DateTime waktuAbsen = DateTime.now(); //mengambil waktu saat ini
-      Navigator.push(
-        // pindah ke halaman sukses
-        context,
-        MaterialPageRoute(
-          builder:
-              (context) => SuksesScreen(
-                waktu: waktuAbsen, // waktu absen yang diambil
-              ),
-        ),
-      );
+      final DateTime waktuAbsen = DateTime.now();
+
+      try {
+        await Supabase.instance.client.from('absensi').insert({
+          'nama': nama,
+          'waktu': waktuAbsen.toIso8601String(),
+          'status': selectedIsi,
+        });
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SuksesScreen(waktu: waktuAbsen, nama: nama),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan absensi: $e')));
+      }
     } else {
-      // tampilkan snackbar jika belum lengkap
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Silakan isi nama dan pilih kehadiran')),
       );
@@ -42,7 +49,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
 
   @override
   void dispose() {
-    _namaController.dispose(); // bersihkan controller saat widget dihancurkan
+    _namaController.dispose();
     super.dispose();
   }
 
@@ -50,11 +57,10 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        // isi tengah
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // posisi tengah
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -62,11 +68,11 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF08B93), // warna pink
+                  color: const Color(0xFFF08B93),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: const Text(
-                  'Absensi Kehadiran', // judul
+                  'Absensi Kehadiran',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -75,20 +81,18 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-
               TextField(
                 controller: _namaController,
                 decoration: const InputDecoration(
-                  labelText: 'Nama Kehadiran', // label input
+                  labelText: 'Nama Kehadiran',
                   border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
-
               DropdownButtonFormField<String>(
-                value: selectedIsi, // nilai awal dropdown
+                value: selectedIsi,
                 items:
                     isiList
                         .map(
@@ -97,30 +101,50 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                         )
                         .toList(),
                 decoration: const InputDecoration(
-                  labelText: 'Isi Kehadiran', // label input
+                  labelText: 'Isi Kehadiran',
                   border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
                 ),
                 onChanged: (value) {
                   setState(() {
-                    selectedIsi = value; // simpan pilihan
+                    selectedIsi = value;
                   });
                 },
               ),
               const SizedBox(height: 30),
-
               ElevatedButton(
-                onPressed: _konfirmasi, // panggil fungsi konfirmasi
+                onPressed: _konfirmasi,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF08B93), // warna tombol
+                  backgroundColor: const Color(0xFFF08B93),
+                  foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
                     vertical: 14,
                   ),
                   textStyle: const TextStyle(fontSize: 16),
                 ),
-                child: const Text('Konfirmasi Absensi'), // teks tombol
+                child: const Text('Konfirmasi Absensi'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ListAbsensiScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 14,
+                  ),
+                ),
+                child: const Text('Lihat Daftar Absensi'),
               ),
             ],
           ),

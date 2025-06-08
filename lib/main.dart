@@ -1,27 +1,37 @@
+// main.dart
 import 'package:flutter/material.dart';
-import 'absensi_screen.dart'; //import halaman absensi
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'absensi_screen.dart';
 
-void main() {
-  runApp(const AbsensiApp()); //menjalankan aplikasi
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://fveomzyswvehjsrqqgoo.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2ZW9tenlzd3ZlaGpzcnFxZ29vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3NTMwNDEsImV4cCI6MjA2NDMyOTA0MX0.YU3KbaVjBTQjE19KijMoUYSy5Iy63eVcpDFS233PmTc',
+  );
+
+  runApp(const AbsensiApp());
 }
 
 class AbsensiApp extends StatelessWidget {
-  //membuat class AbsensiApp
-  const AbsensiApp({super.key}); //constructor AbsensiApp
+  const AbsensiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //method build untuk membuat tampilan
     return MaterialApp(
-      //menggunakan MaterialApp untuk tampilan material design
-      title: 'Absensi Kehadiran', //judul aplikasi
+      title: 'Absensi Kehadiran',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        //mengatur tema aplikasi
-        scaffoldBackgroundColor: const Color(0xFFFAFAFA), //warna latar belakang
-        useMaterial3: true, //menggunakan material 3
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFFAFAFA),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF08B93),
+          foregroundColor: Colors.black,
+        ),
       ),
-      home: AbsensiScreen(), //menampilkan halaman utama AbsensiScreen
+      home: const AbsensiScreen(),
     );
   }
 }
