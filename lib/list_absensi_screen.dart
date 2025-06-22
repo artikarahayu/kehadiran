@@ -43,23 +43,17 @@ class _ListAbsensiScreenState extends State<ListAbsensiScreen> {
 
   Future<void> _hapusAbsensi(int id) async {
     try {
-      final response = await supabase.from('absensi').delete().eq('id', id);
+      await supabase.from('absensi').delete().eq('id', id);
 
-      // Jika berhasil, response berisi list data yang terhapus
-      if (response != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Data berhasil dihapus')));
-        _fetchAbsensi();
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Gagal menghapus data')));
-      }
-    } catch (e) {
+      await _fetchAbsensi(); // pastikan data ter-refresh
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
+      ).showSnackBar(const SnackBar(content: Text('✅ Data berhasil dihapus')));
+    } catch (e) {
+      print('Error saat hapus: $e'); // untuk debug saat development
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('❌ Gagal menghapus data: $e')));
     }
   }
 
